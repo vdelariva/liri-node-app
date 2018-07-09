@@ -5,16 +5,8 @@ require("dotenv").config();
 //  npm install twitter
 //  npm install request
 //  npm install --save node-spotify-api
+//  npm install dotenv
 // ____________________________________________________________________________________
-
-// NPM module used to access Twitter API.
-var twitter = require("twitter");
-
-// Used to access Twitter & Spotify keys in local file, keys.js.
-var keysFile = require("./keys.js");
-
-// NPM module used to access Spotify API.
-// var spotify = require("spotify");
 
 // NPM module used to access OMDB API.
 var request = require("request");
@@ -22,50 +14,90 @@ var request = require("request");
 // NPM module used to read the random.txt file.
 var fs = require("fs");
 
-// var spotify = new Spotify(keys.spotify);
+// Used to access Twitter & Spotify keys in local file, keys.js.
+var keysFile = require("./keys.js");
+
+// NPM module used to access Twitter API.
+var twitter = require("twitter");
 // var client = new Twitter(keys.twitter);
 
+// NPM module used to access Spotify API.
+var Spotify = require("node-spotify-api");
 
 //  Command requested
 var command = process.argv[2];
 
 // Optional additional parameters
-var argument = "";
+var argument = getArgument();
 
-switch (command){
-    case "my-tweets":
-    // get tweets
-    break;
-    case "spotify-this-song":
-    // spotify
-    break;
-    case "movie-this":
-        getMovieInfo();
-    break;
-    case "do-what-it-says":
-    // random
-    break;
-    default:
-    // something
-    break;
-}
+processRequest(command,argument);
 
+// ____________________________________________________________________________________
 
-function getMovieInfo(){
-
+function getArgument() {
     process.argv.shift()  // skip node.exe
     process.argv.shift()  // skip name of js file
     process.argv.shift()  // skip command
 
-    var movieName = (process.argv.join(" "))
+    return process.argv.join(" ")
+}
+// ____________________________________________________________________________________
 
-    console.log (movieName);
+function processRequest (command,argument){
+    switch (command){
+        case "my-tweets":
+        // get tweets
+        break;
+        case "spotify-this-song":
+            getSongInfo(argument);
+        break;
+        case "movie-this":
+            getMovieInfo(argument);
+        break;
+        case "do-what-it-says":
+            doWhatItSays();
+        break;
+        default:
+        // something
+        break;
+    }
+}
+
+// ____________________________________________________________________________________
+
+function getSongInfo(song){
+    var spotify = new Spotify(keysFile.spotify);
+    const defaultSong = "The Sign Ace of Base"
+    var querySearch = song;
+
+    if (song.length == 0) {
+         querySearch = defaultSong;
+    }
+    spotify.search({ type: 'track', query: querySearch, limit: 1 }, (err, data) => {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+        // Log song information
+        // console.log(JSON.stringify(data)); 
+        console.log("Artists: "+data.tracks.items[0].album.artists[0].name);
+        console.log("Song Name: "+data.tracks.items[0].name);
+        console.log("Preview Link: "+data.tracks.items[0].preview_url);
+        console.log("Album: "+data.tracks.items[0].album.name)
+    });       
+}
+
+// ____________________________________________________________________________________
+
+function getMovieInfo(movie){
+    const defaultMovie = "Mr. Nobody";
+    var movieName = movie;
+    
+    if (movieName.length == 0) {
+        movieName = defaultMovie;
+    };
 
     // Run a request to the OMDB API with the movie specified
     var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
-
-    // This line is just to help us debug against the actual URL.
-    console.log(queryUrl);
 
     // Create a request to the queryUrl
     request(queryUrl, (error,response,data) => {
@@ -86,3 +118,20 @@ function getMovieInfo(){
         }
     });
 };
+
+// ____________________________________________________________________________________
+
+function doWhatItSays() {
+    fs.readFile("random.txt", "utf8", (error,data) => {
+        if (error) {
+            return console.log(error);
+        }
+        var whatToDoArray = data.split(",")
+        console.log("What: "+whatToDoArray);
+
+        command = whatToDoArray[0];
+        argument = whatToDoArray[1];
+
+        processRequest(command,argument);
+    })
+}
