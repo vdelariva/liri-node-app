@@ -6,6 +6,7 @@ require("dotenv").config();
 //  npm install request
 //  npm install --save node-spotify-api
 //  npm install dotenv
+//  npm install fs
 // ____________________________________________________________________________________
 
 // NPM module used to access OMDB API.
@@ -18,8 +19,7 @@ var fs = require("fs");
 var keysFile = require("./keys.js");
 
 // NPM module used to access Twitter API.
-var twitter = require("twitter");
-// var client = new Twitter(keys.twitter);
+var Twitter = require("twitter");
 
 // NPM module used to access Spotify API.
 var Spotify = require("node-spotify-api");
@@ -46,7 +46,7 @@ function getArgument() {
 function processRequest (command,argument){
     switch (command){
         case "my-tweets":
-        // get tweets
+            getMyTweets();
         break;
         case "spotify-this-song":
             getSongInfo(argument);
@@ -61,6 +61,22 @@ function processRequest (command,argument){
         // something
         break;
     }
+}
+
+// ____________________________________________________________________________________
+
+function getMyTweets() {
+    var client = new Twitter(keysFile.twitter);
+    var params = {screen_name: 'vcdelariva', count: 20};
+
+    client.get('statuses/user_timeline', params, (error, tweets, response) => {
+    if (!error) {
+        console.log(tweets.length);
+        for (var i=0; i<tweets.length; i++){
+            console.log("My Tweets: "+tweets[i].text)
+        }
+    }
+    });
 }
 
 // ____________________________________________________________________________________
@@ -91,7 +107,7 @@ function getSongInfo(song){
 function getMovieInfo(movie){
     const defaultMovie = "Mr. Nobody";
     var movieName = movie;
-    
+
     if (movieName.length == 0) {
         movieName = defaultMovie;
     };
