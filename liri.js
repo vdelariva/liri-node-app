@@ -24,6 +24,12 @@ var Twitter = require("twitter");
 // NPM module used to access Spotify API.
 var Spotify = require("node-spotify-api");
 
+// NPM module for moment
+var moment = require('moment');
+
+// Output file for logs.
+var filename = './log.txt';
+
 //  Command requested
 var command = process.argv[2];
 
@@ -35,9 +41,12 @@ processRequest(command,argument);
 // ____________________________________________________________________________________
 
 function getArgument() {
-    process.argv.shift()  // skip node.exe
-    process.argv.shift()  // skip name of js file
-    process.argv.shift()  // skip command
+    const argIndex = 3;
+
+    // Skip to command arguments and concatenate
+    for (var i=0; i<argIndex; i++) {
+        process.argv.shift();
+    }
 
     return process.argv.join(" ")
 }
@@ -58,7 +67,7 @@ function processRequest (command,argument){
             doWhatItSays();
         break;
         default:
-        // something
+            displayHelpText();
         break;
     }
 }
@@ -66,16 +75,18 @@ function processRequest (command,argument){
 // ____________________________________________________________________________________
 
 function getMyTweets() {
-    var client = new Twitter(keysFile.twitter);
-    var params = {screen_name: 'vcdelariva', count: 20};
+    let client = new Twitter(keysFile.twitter);
+    let params = {screen_name: 'vcdelariva', count: 20};
+    // let logString = logDivider;
 
     client.get('statuses/user_timeline', params, (error, tweets, response) => {
     if (!error) {
-        console.log(tweets.length);
         for (var i=0; i<tweets.length; i++){
-            console.log("My Tweets: "+tweets[i].text)
+            // logString += "My Tweets: "+tweets[i].text+"\n";
+            console.log(`My Tweet:  ${tweets[i].text}  Created on: ${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}`);
         }
     }
+    // console.log(logString);
     });
 }
 
@@ -150,4 +161,26 @@ function doWhatItSays() {
 
         processRequest(command,argument);
     })
+}
+
+// ____________________________________________________________________________________
+
+function displayHelpText() {
+    console.log("LIRI - Language Interpretation and Recognition Interface")
+    console.log("Commands:");
+    console.log('liri my-tweets');
+    console.log("liri spotify-this-song <song name>");
+    console.log("liri movie-this <movie name>");
+    console.log("liri do-what-it-says");
+}
+
+function logConsole(){
+    // String to separate responses
+const logDivider = "____________________________________________________________________________\n";
+
+
+}
+
+function logFile() {
+
 }
