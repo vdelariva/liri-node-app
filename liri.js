@@ -95,6 +95,7 @@ function getMyTweets() {
         for (var i=0; i<tweets.length; i++){
             logString += `${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}:  ${tweets[i].text}\n`
         }
+        logString += "\n"
     }
     logOutput(logString,"my-tweets");
     });
@@ -120,7 +121,7 @@ function getSongInfo(song){
         logString = `Artists: ${data.tracks.items[0].album.artists[0].name}\n`
             + `Song Name: ${data.tracks.items[0].name}\n`
             + `Preview Link: ${data.tracks.items[0].preview_url}\n`
-            + `Album: ${data.tracks.items[0].album.name}`
+            + `Album: ${data.tracks.items[0].album.name}\n\n`
 
         logOutput(logString,"spotify-this-song")
     });       
@@ -156,7 +157,7 @@ function getMovieInfo(movie){
                 + `Country Produced In: ${movie.Country}\n`
                 + `Language: ${movie.Language}\n`
                 + `Plot: ${movie.Plot}\n`
-                + `Actors: ${movie.Actors}\n`;
+                + `Actors: ${movie.Actors}\n\n`;
 
             logOutput(logString,"movie-this")
         }
@@ -188,7 +189,7 @@ function displayHelpText() {
         + "     liri my-tweets\n"
         + "     liri spotify-this-song <song name>\n"
         + "     liri movie-this <movie name>\n"
-        + "     liri do-what-it-says\n";
+        + "     liri do-what-it-says\n\n";
 
     logOutput(logString,"LIRI Help")
 }
