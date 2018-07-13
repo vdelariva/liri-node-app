@@ -62,6 +62,8 @@ function processRequest (command,argument){
         case "do-what-it-says":
             doWhatItSays();
         break;
+        case "?":
+            displayHelpText();
         default:
             displayHelpText();
         break;
