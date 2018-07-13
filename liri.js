@@ -96,8 +96,12 @@ function getMyTweets() {
             logString += `${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}:  ${tweets[i].text}\n`
         }
         logString += "\n"
+        logOutput(logString,"my-tweets");
+
     }
-    logOutput(logString,"my-tweets");
+    else {
+        console.log(`Twitter error: ${error}`);
+    }
     });
 }
 
@@ -115,7 +119,7 @@ function getSongInfo(song){
     }
     spotify.search({ type: 'track', query: querySearch, limit: 1 }, (err, data) => {
         if (err) {
-            return console.log('Error occurred: ' + err);
+            return console.log(`Spotify error: ' ${err}`);
         }
         // Log song information
         logString = `Artists: ${data.tracks.items[0].album.artists[0].name}\n`
@@ -161,6 +165,9 @@ function getMovieInfo(movie){
 
             logOutput(logString,"movie-this")
         }
+        else {
+            console.log(`OMDB error: ${error}`)
+        }
     });
 };
 
@@ -169,10 +176,9 @@ function getMovieInfo(movie){
 function doWhatItSays() {
     fs.readFile("random.txt", "utf8", (error,data) => {
         if (error) {
-            return console.log(error);
+            return console.log(`Read random.txt file error: ${error}`);
         }
         var whatToDoArray = data.split(",")
-        // console.log("What: "+whatToDoArray);
 
         command = whatToDoArray[0];
         argument = whatToDoArray[1];
