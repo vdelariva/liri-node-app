@@ -1,12 +1,6 @@
 require("dotenv").config();
 
 // Required NPM modules and files.
-// 
-//  npm install twitter
-//  npm install request
-//  npm install --save node-spotify-api
-//  npm install dotenv
-//  npm install fs
 // ____________________________________________________________________________________
 
 // NPM module used to access OMDB API.
@@ -38,6 +32,8 @@ var argument = getArgument();
 
 processRequest(command,argument);
 
+// ____________________________________________________________________________________
+// Functions
 // ____________________________________________________________________________________
 
 function getArgument() {
@@ -71,22 +67,36 @@ function processRequest (command,argument){
         break;
     }
 }
+// ____________________________________________________________________________________
 
+function logOutput(log,cmd){
+    // String to separate responses
+    const logMsg = `------------------------------ ${cmd} ${moment().format("LLL")} ------------------------------\n${log}`;
+
+    // Log output to console
+    console.log(logMsg);
+
+    // Log output to log.txt
+    fs.appendFile(filename, logMsg, (err,d) => {
+        if (err){
+            console.log(err);
+        }
+    });
+}
 // ____________________________________________________________________________________
 
 function getMyTweets() {
     let client = new Twitter(keysFile.twitter);
     let params = {screen_name: 'vcdelariva', count: 20};
-    // let logString = logDivider;
+    let logString = "";
 
     client.get('statuses/user_timeline', params, (error, tweets, response) => {
     if (!error) {
         for (var i=0; i<tweets.length; i++){
-            // logString += "My Tweets: "+tweets[i].text+"\n";
-            console.log(`My Tweet:  ${tweets[i].text}  Created on: ${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}`);
+            logString += `${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}:  ${tweets[i].text}\n`
         }
     }
-    // console.log(logString);
+    logOutput(logString,"my-tweets");
     });
 }
 
@@ -95,7 +105,9 @@ function getMyTweets() {
 function getSongInfo(song){
     var spotify = new Spotify(keysFile.spotify);
     const defaultSong = "The Sign Ace of Base"
-    var querySearch = song;
+    let querySearch = song;
+    let logString = "";
+
 
     if (song.length == 0) {
          querySearch = defaultSong;
@@ -105,11 +117,12 @@ function getSongInfo(song){
             return console.log('Error occurred: ' + err);
         }
         // Log song information
-        // console.log(JSON.stringify(data)); 
-        console.log("Artists: "+data.tracks.items[0].album.artists[0].name);
-        console.log("Song Name: "+data.tracks.items[0].name);
-        console.log("Preview Link: "+data.tracks.items[0].preview_url);
-        console.log("Album: "+data.tracks.items[0].album.name)
+        logString = `Artists: ${data.tracks.items[0].album.artists[0].name}\n`
+            + `Song Name: ${data.tracks.items[0].name}\n`
+            + `Preview Link: ${data.tracks.items[0].preview_url}\n`
+            + `Album: ${data.tracks.items[0].album.name}`
+
+        logOutput(logString,"spotify-this-song")
     });       
 }
 
@@ -117,7 +130,9 @@ function getSongInfo(song){
 
 function getMovieInfo(movie){
     const defaultMovie = "Mr. Nobody";
-    var movieName = movie;
+    let movieName = movie;
+    let logString = "";
+
 
     if (movieName.length == 0) {
         movieName = defaultMovie;
@@ -134,14 +149,16 @@ function getMovieInfo(movie){
             // Convert to JSON object
             var movie = JSON.parse(data);
             // Log the movie information
-            console.log("Movie Title: "+movie.Title);
-            console.log("Release Year: "+movie.Year);
-            console.log("The IMDB movie rating is: "+movie.imdbRating);
-            console.log(movie.Ratings[1].Source+" Rating: "+movie.Ratings[1].Value)
-            console.log("Country Produced In: "+movie.Country);
-            console.log("Language: "+movie.Language);
-            console.log("Plot: "+movie.Plot);
-            console.log("Actors: "+movie.Actors);
+            logString = `Movie Title: ${movie.Title}\n`
+                + `Release Year: ${movie.Year}\n`
+                + `The IMDB movie rating is: ${movie.imdbRating}\n`
+                + `${movie.Ratings[1].Source} Rating: ${movie.Ratings[1].Value}\n`
+                + `Country Produced In: ${movie.Country}\n`
+                + `Language: ${movie.Language}\n`
+                + `Plot: ${movie.Plot}\n`
+                + `Actors: ${movie.Actors}\n`;
+
+            logOutput(logString,"movie-this")
         }
     });
 };
@@ -154,7 +171,7 @@ function doWhatItSays() {
             return console.log(error);
         }
         var whatToDoArray = data.split(",")
-        console.log("What: "+whatToDoArray);
+        // console.log("What: "+whatToDoArray);
 
         command = whatToDoArray[0];
         argument = whatToDoArray[1];
@@ -166,21 +183,12 @@ function doWhatItSays() {
 // ____________________________________________________________________________________
 
 function displayHelpText() {
-    console.log("LIRI - Language Interpretation and Recognition Interface")
-    console.log("Commands:");
-    console.log('liri my-tweets');
-    console.log("liri spotify-this-song <song name>");
-    console.log("liri movie-this <movie name>");
-    console.log("liri do-what-it-says");
-}
+    let logString = "LIRI - Language Interpretation and Recognition Interface\n"
+        + "Commands:\n"
+        + "     liri my-tweets\n"
+        + "     liri spotify-this-song <song name>\n"
+        + "     liri movie-this <movie name>\n"
+        + "     liri do-what-it-says\n";
 
-function logConsole(){
-    // String to separate responses
-const logDivider = "____________________________________________________________________________\n";
-
-
-}
-
-function logFile() {
-
+    logOutput(logString,"LIRI Help")
 }
