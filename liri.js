@@ -1,7 +1,7 @@
-require("dotenv").config();
-
 // Required NPM modules and files.
 // ____________________________________________________________________________________
+// Twitter & Spotify keys
+require("dotenv").config();
 
 // NPM module used to access OMDB API.
 var request = require("request");
@@ -70,7 +70,7 @@ function processRequest (command,argument){
 // ____________________________________________________________________________________
 
 function logOutput(log,cmd){
-    // String to separate responses
+    // String to separate responses with liri command and timestamp
     const logMsg = `------------------------------ ${cmd} ${moment().format("LLL")} ------------------------------\n${log}`;
 
     // Log output to console
@@ -93,7 +93,7 @@ function getMyTweets() {
     client.get('statuses/user_timeline', params, (error, tweets, response) => {
     if (!error) {
         for (var i=0; i<tweets.length; i++){
-            logString += `${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}:  ${tweets[i].text}\n`
+            logString += `${moment(tweets[i].created_at,"ddd MMM DD HH:mm:ss ZZ YYYY").format("LLL")}: ${tweets[i].text}\n`
         }
         logString += "\n"
         logOutput(logString,"my-tweets");
@@ -119,7 +119,7 @@ function getSongInfo(song){
     }
     spotify.search({ type: 'track', query: querySearch, limit: 1 }, (err, data) => {
         if (err) {
-            return console.log(`Spotify error: ' ${err}`);
+            return console.log(`Spotify error: ${err}`);
         }
         // Log song information
         logString = `Artists: ${data.tracks.items[0].album.artists[0].name}\n`
