@@ -155,9 +155,9 @@ function getMovieInfo(movie){
             // Convert to JSON object
             var movie = JSON.parse(data);
 
-            // Check if movie was found in OMDB and return
+            // Check if movie was found in OMDB, if not found, log error and return
             if (movie.Response === "False") {
-                console.log(`Error: ${movie.Error}`)
+                console.log(`Error: ${movie.Error}`);
                 return;
             }
 
@@ -169,7 +169,7 @@ function getMovieInfo(movie){
             // Check if more than one source for movie ratings, if so, then list all source ratings
             if (movie.Ratings.length > 1){
                 for (var i=1; i < movie.Ratings.length; i++) {
-                    logString+= `${movie.Ratings[i].Source} Rating: ${movie.Ratings[i].Value}\n`;
+                    logString += `${movie.Ratings[i].Source} Rating: ${movie.Ratings[i].Value}\n`;
                 }
             }
 
@@ -178,10 +178,10 @@ function getMovieInfo(movie){
                 + `Plot: ${movie.Plot}\n`
                 + `Actors: ${movie.Actors}\n\n`;
 
-            logOutput(logString,"movie-this")
+            logOutput(logString,"movie-this");
         }
         else {
-            console.log(`OMDB error: ${error}`)
+            console.log(`OMDB error: ${error}`);
         }
     });
 };
@@ -193,7 +193,7 @@ function doWhatItSays() {
         if (error) {
             return console.log(`Read random.txt file error: ${error}`);
         }
-        var whatToDoArray = data.split(",")
+        var whatToDoArray = data.split(",");
 
         command = whatToDoArray[0];
         argument = whatToDoArray[1];
@@ -212,5 +212,5 @@ function displayHelpText() {
         + "     liri movie-this <movie name>\n"
         + "     liri do-what-it-says\n\n";
 
-    logOutput(logString,"LIRI Help")
+    logOutput(logString,"LIRI Help");
 }
