@@ -115,7 +115,6 @@ function getSongInfo(song){
     let querySearch = song;
     let logString = "";
 
-
     if (song.length == 0) {
          querySearch = defaultSong;
     }
@@ -140,13 +139,13 @@ function getMovieInfo(movie){
     let movieName = movie;
     let logString = "";
 
-
+    // If movie name not provided, then return info for default movie title
     if (movieName.length == 0) {
         movieName = defaultMovie;
     };
 
     // Run a request to the OMDB API with the movie specified
-    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+    var queryUrl = `http://www.omdbapi.com/?t=${movieName}&y=&plot=short&apikey=trilogy`;
 
     // Create a request to the queryUrl
     request(queryUrl, (error,response,data) => {
@@ -155,12 +154,26 @@ function getMovieInfo(movie){
         if (!error && response.statusCode === 200) {
             // Convert to JSON object
             var movie = JSON.parse(data);
+
+            // Check if movie was found in OMDB and return
+            if (movie.Response === "False") {
+                console.log(`Error: ${movie.Error}`)
+                return;
+            }
+
             // Log the movie information
             logString = `Movie Title: ${movie.Title}\n`
                 + `Release Year: ${movie.Year}\n`
-                + `The IMDB movie rating is: ${movie.imdbRating}\n`
-                + `${movie.Ratings[1].Source} Rating: ${movie.Ratings[1].Value}\n`
-                + `Country Produced In: ${movie.Country}\n`
+                + `The IMDB movie rating is: ${movie.imdbRating}\n`;
+
+            // Check if more than one source for movie ratings, if so, then list all source ratings
+            if (movie.Ratings.length > 1){
+                for (var i=1; i < movie.Ratings.length; i++) {
+                    logString+= `${movie.Ratings[i].Source} Rating: ${movie.Ratings[i].Value}\n`;
+                }
+            }
+
+            logString += `Country Produced In: ${movie.Country}\n`
                 + `Language: ${movie.Language}\n`
                 + `Plot: ${movie.Plot}\n`
                 + `Actors: ${movie.Actors}\n\n`;
