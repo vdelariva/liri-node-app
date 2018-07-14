@@ -31,3 +31,5 @@ Using node.js and various libraries, created a simple SIRI like program that wil
 
 * **Bonus feature:** Added log file to keep track of LIRI commands
 * If any of the API calls return an error, the error is written to the console
+* The app will check if the movie is not found in OMDB and display an error to the console
+* Not all movies have a Rotten Tomatoes rating, the app will check if there is more than one source for ratings, if there are more than one, then it will list all source ratings.
