@@ -15,7 +15,7 @@ Using node.js and various libraries, created a simple SIRI like program that wil
 **Exceptions:**
 * If no song title is specified, LIRI returns stats for the song "The Sign" by Ace of Base
 * If no movie title is specified, LIRI returns status for the movie "Mr. Nobody"
-* If no command is specified or "?" entered, LIRI lists the the help text with the available commands
+* If no command is specified, LIRI lists the the help text with the available commands
 
 ## Tools ##
 
@@ -33,3 +33,5 @@ Using node.js and various libraries, created a simple SIRI like program that wil
 * If any of the API calls return an error, the error is written to the console
 * The app will check if the movie is not found in OMDB and display an error to the console
 * Not all movies have a Rotten Tomatoes rating, the app will check if there is more than one source for ratings, if there are more than one, then it will list all source ratings.
+* If value for song preview link is null, LIRI prints 'No preview link available.'
+
