@@ -62,8 +62,6 @@ function processRequest (command,argument){
         case "do-what-it-says":
             doWhatItSays();
         break;
-        case "?":
-            displayHelpText();
         default:
             displayHelpText();
         break;
@@ -111,24 +109,32 @@ function getMyTweets() {
 
 function getSongInfo(song){
     var spotify = new Spotify(keysFile.spotify);
-    const defaultSong = "The Sign Ace of Base"
+    const defaultSong = "The Sign Ace of Base";
     let querySearch = song;
     let logString = "";
+    const queryLimit = 5;
 
     if (song.length == 0) {
          querySearch = defaultSong;
     }
-    spotify.search({ type: 'track', query: querySearch, limit: 1 }, (err, data) => {
+    spotify.search({ type: 'track', query: querySearch, limit: queryLimit }, (err, data) => {
         if (err) {
             return console.log(`Spotify error: ${err}`);
         }
-        // Log song information
-        logString = `Artists: ${data.tracks.items[0].album.artists[0].name}\n`
-            + `Song Name: ${data.tracks.items[0].name}\n`
-            + `Preview Link: ${data.tracks.items[0].preview_url}\n`
-            + `Album: ${data.tracks.items[0].album.name}\n\n`
+        for (var i=0; i<data.tracks.items.length; i++){
+            // Log song information
+            logString += `Song Name: ${data.tracks.items[i].name}\n`
+                + `Artists: ${data.tracks.items[i].album.artists[0].name}\n`
+                + `Album: ${data.tracks.items[i].album.name}\n`;
 
-        logOutput(logString,"spotify-this-song")
+            if (data.tracks.items[i].preview_url == null) {
+                logString += `Preview Link: No preview link available\n\n`;
+            }
+            else {
+                logString += `Preview Link: ${data.tracks.items[i].preview_url}\n\n`;
+            }
+        }
+        logOutput(logString,"spotify-this-song",i)
     });       
 }
 
@@ -166,7 +172,7 @@ function getMovieInfo(movie){
                 + `Release Year: ${movie.Year}\n`
                 + `The IMDB movie rating is: ${movie.imdbRating}\n`;
 
-            // Check if more than one source for movie ratings, if so, then list all source ratings
+            // Check if more than one source for movie ratings, if so, then list all remaining source ratings
             if (movie.Ratings.length > 1){
                 for (var i=1; i < movie.Ratings.length; i++) {
                     logString += `${movie.Ratings[i].Source} Rating: ${movie.Ratings[i].Value}\n`;
